@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
+import cors from "cors";
 import * as db from "./db/index.js";
 
 dotenv.config();
@@ -23,6 +24,8 @@ const app = express();
 // 	);
 // 	next();
 // });
+
+app.use(cors());
 
 // The middleware express.json() parses incoming JSON requests and puts the parsed data in req.body, making it accessible for further processing in our application
 app.use(express.json());
@@ -114,9 +117,9 @@ app.put("/api/v1/restaurants/:id", async (req, res) => {
 			"update restaurants set name = $1, location = $2, price_range = $3 where id = $4 returning *",
 			[req.body.name, req.body.location, req.body.price_range, req.params.id]
 		);
-        const updated_restaurant = results.rows[0];
-        console.log("[SUCCESS] Restaurant update: ")
-        console.log(updated_restaurant)
+		const updated_restaurant = results.rows[0];
+		console.log("[SUCCESS] Restaurant update: ");
+		console.log(updated_restaurant);
 
 		res.status(200).json({
 			status: "success",
@@ -124,8 +127,8 @@ app.put("/api/v1/restaurants/:id", async (req, res) => {
 				restaurant: [updated_restaurant],
 			},
 		});
-    } catch (error) {
-        console.log("[FAILED] Restaurant update: ");
+	} catch (error) {
+		console.log("[FAILED] Restaurant update: ");
 		console.log(error);
 	}
 });
@@ -134,18 +137,17 @@ app.put("/api/v1/restaurants/:id", async (req, res) => {
 // Asking express to delete a restaurant
 app.delete("/api/v1/restaurants/:id", async (req, res) => {
 	try {
-		const results = await db.query(
-			"delete from restaurants where id = $1",
-			[req.params.id]
-		);
+		const results = await db.query("delete from restaurants where id = $1", [
+			req.params.id,
+		]);
 
-        console.log("[SUCCESS] Delete restaurant");
+		console.log("[SUCCESS] Delete restaurant");
 
 		res.status(204).json({
-			status: "success"
+			status: "success",
 		});
-    } catch (error) {
-        console.log("[FAILED] Delete restaurant");
+	} catch (error) {
+		console.log("[FAILED] Delete restaurant");
 		console.log(error);
 	}
 });
